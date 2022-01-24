@@ -39,7 +39,7 @@ data:
         gzip_proxied any;
         gzip_vary on;
 
-        log_format custom-nginx '{"source":"[control-on-prem]",'
+        log_format custom-nginx '{"source":"[custom-nginx]",'
                                    '"time":"$time_local",'
                                    '"status":"$status",'
                                    '"remote_addr":"$remote_addr",'
