@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custom-nginx
+  namespace: default
+  labels:
+    app: custom-nginx
+  annotations:
+    configmap.reloader.stakater.com/reload: "custom-nginx-global-config,custom-nginx-virtual-host-config"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: custom-nginx
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: custom-nginx
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: custom-nginx
+        image: winds6206/custom-nginx:1.19.2
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 80
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 80
+          timeoutSeconds: 2
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 80
+          timeoutSeconds: 2
+        volumeMounts:
+          - name: nginx-virtual-host-config
+            mountPath: /etc/nginx/conf.d
+          - name: nginx-global-config
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+      volumes:
+      - name: nginx-virtual-host-config
+        configMap:
+          name: custom-nginx-virtual-host-config
+      - name: nginx-global-config
+        configMap:
+          name: custom-nginx-global-config
+          items:
+          - key: nginx.conf
+            path: nginx.conf
