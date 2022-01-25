@@ -25,7 +25,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: custom-nginx
-        image: winds6206/custom-nginx:1.19.2
+        image: winds6206/nginx-timezone:1.19.2
         imagePullPolicy: Always
         ports:
           - containerPort: 80
